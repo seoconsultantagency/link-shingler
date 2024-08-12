@@ -1,0 +1,43 @@
+//Adds a link looping through a custom array of keywords,
+//and applies a word to each page and displays that as the link label dynamically.
+function dynamic_sub_menu_insert( $items, $args ) {
+  	//Custom list of words. (Make sure to have more than there are pages available to avoid gaps/errors)
+	$phrases = array(
+		"seo agency",
+		"technical seo agency",
+		"affordable seo agency",
+		"local seo agency",
+		"seo agency uk",
+		"ecommerce seo agency",
+		"seo agency manchester",
+		"professional seo agency",
+	);
+  	//Get the ID's (Returns an array)
+	$page_ids = get_all_page_ids();
+  	foreach($page_ids as $page){
+		//Only run on the current page associated with the page within the array.
+		if (is_page($page)){
+			//Get the index of the page within the original array ($page_ids)
+			$key = array_search( $page, $page_ids);
+			$theme_location = 'service-menu';// Theme Location slug
+		    $existing_menu_item_db_id = 95; // ID of the parent item you want the sub item to attach to
+		    $new_menu_item_db_id = 99254; // unique id number (Something random so you dont have conflicts)
+		    $label = $phrases[$key]; //Set dynamic labelling matching the current page index to the index of the custom phrase lisitng.
+			$url = 'https://embryo.staging.wpmudev.host/seo-manchester/'; //Set the URL of the item
+			if ($args->theme_location == $theme_location){ //Only applies to the menu set here
+				// only if user is logged-in, do sub-menu link
+		        $item = array(
+		            'title'            => $label,
+		            'menu_item_parent' => $existing_menu_item_db_id,
+		            'ID'               => $new_menu_item_db_id,
+		            'db_id'            => $new_menu_item_db_id,
+		            'url'              => $url,
+		            'classes'          => array( 'custom-menu-item' )// optionally add custom CSS class
+		        );
+				 $items[] = (object) $item;
+			}
+	    }
+	}
+    return $items;
+}
+add_filter( 'wp_nav_menu_objects', 'dynamic_sub_menu_insert', 10, 2 );
